@@ -107,5 +107,6 @@ class GOL:
             rowString = " ".join([" " if c == 0 else "*" for c in r])
             print("{} {}".format(i + 1, rowString))
 
+
 g = GOL()
 g.nGen(1000)
