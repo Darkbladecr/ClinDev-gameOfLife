@@ -17,78 +17,81 @@ class GOL:
 
         Use default grid of 8x8 or otherwise values given at institation.
         """
+        self.limit = False
         if row is None or column is None:
-            self.gen = [[0, 0, 1, 1, 0, 0, 0, 1],
+            self.gen = [[[0, 0, 1, 1, 0, 0, 0, 1],
                         [0, 1, 1, 1, 0, 0, 1, 1],
                         [1, 0, 0, 0, 1, 1, 0, 1],
                         [0, 1, 1, 0, 1, 1, 1, 1],
                         [1, 1, 0, 1, 0, 1, 0, 0],
                         [1, 0, 1, 0, 1, 1, 1, 0],
                         [0, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 0, 1, 0, 0, 1, 1, 0]]
+                        [1, 0, 1, 0, 0, 1, 1, 0]]]
         else:
-            self.gen = list()
+            self.gen = [[]]
             for r in xrange(row):
-                self.gen.append(list())
+                self.gen[0].append(list())
                 for i in xrange(column):
-                    self.gen[r].append(int(round(random.random())))
+                    self.gen[0][r].append(int(round(random.random())))
 
     def __neighbors(self, row, column):
         """Calculate number of neighbors."""
         # Remove count if life
-        neighbors = 0 - self.gen[row][column]
+        neighbors = 0 - self.gen[-1][row][column]
 
         if row == 0:
             rowRange = xrange(0, 2)
-        elif row == len(self.gen) - 1:
+        elif row == len(self.gen[-1]) - 1:
             rowRange = xrange(-1, 1)
         else:
             rowRange = xrange(-1, 2)
 
         if column == 0:
             colRange = xrange(0, 2)
-        elif column == len(self.gen[0]) - 1:
+        elif column == len(self.gen[-1][0]) - 1:
             colRange = xrange(-1, 1)
         else:
             colRange = xrange(-1, 2)
 
         for i in rowRange:
             for j in colRange:
-                neighbors = neighbors + self.gen[row + i][column + j]
+                neighbors = neighbors + self.gen[-1][row + i][column + j]
         return neighbors
 
     def __neighbors2(self, row, column):
-        """Alt calculate number of neighbors."""
+        """Alt calculate number of neighbors and ~x0.5 slower."""
         rStart = row - 1
         rEnd = row + 2
         if row == 0:
             rStart = 0
-        elif row == len(self.gen) - 1:
-            rEnd = len(self.gen)
+        elif row == len(self.gen[-1]) - 1:
+            rEnd = len(self.gen[-1])
 
         cStart = column - 1
         cEnd = column + 2
         if column == 0:
             cStart = 0
-        elif column == len(self.gen[0]) - 1:
-            cEnd = len(self.gen)
+        elif column == len(self.gen[-1][0]) - 1:
+            cEnd = len(self.gen[-1])
 
-        rows = self.gen[rStart:rEnd]
+        rows = self.gen[-1][rStart:rEnd]
         grid = list()
         for r in rows:
             grid.append(r[cStart:cEnd])
         flatten = [i for j in grid for i in j]
-        neighbors = sum(flatten) - self.gen[row][column]
+        neighbors = sum(flatten) - self.gen[-1][row][column]
         return neighbors
 
     def __nextGen(self):
         """Generate the next generation grid."""
+        if self.limit is True:
+            return
         temp = list()
-        for row in xrange(len(self.gen)):
+        for row in xrange(len(self.gen[-1])):
             temp.append(list())
-            for col in xrange(len(self.gen[0])):
+            for col in xrange(len(self.gen[-1][0])):
                 n = self.__neighbors(row, col)
-                if self.gen[row][col] == 0:
+                if self.gen[-1][row][col] == 0:
                     if n == 3:
                         temp[row].append(1)
                     else:
@@ -97,31 +100,52 @@ class GOL:
                     temp[row].append(1)
                 else:
                     temp[row].append(0)
-        self.gen = temp
+        # Grid not changing, so no need to re-run expensive operations.
+        if self.gen[-1] == temp:
+            self.limit = True
+        self.gen.append(temp)
 
     def nGen(self, n):
         """Fastforward n number of generations."""
         if n < 0:
             print("You are not the Great Spirit so you lack the ability to reverse time in this universe.")
         elif n == 0:
-            self.grid()
+            self.grid(n)
         else:
             for i in range(n):
                 self.__nextGen()
-            self.grid()
+            self.grid(n)
 
-    def grid(self):
+    def grid(self, n=-1):
         """Print grid of life."""
-        legend = [str(i) for i in range(1, len(self.gen[0]) + 1)]
-        print("  {}".format(" ".join(legend)))
-        for i, r in enumerate(self.gen):
-            rowString = " ".join([" " if c == 0 else "*" for c in r])
-            print("{} {}".format(i + 1, rowString))
+        if n > len(self.gen):
+            n = -1
+        # Print top row legend
+        legend = range(1, len(self.gen[n][0]) + 1)
+        digits = len(str(len(legend)))
+        legendStr = " "
+        for num in legend:
+            spacer = " " * (digits - len(str(num)))
+            legendStr = legendStr + " {}{}".format(spacer, str(num))
+        print(legendStr)
+        # Print grid and column legend
+        for i, r in enumerate(self.gen[n]):
+            # Right spacing for multiple digits
+            rowString = "{}".format(" " * digits).join([" " if c == 0 else "*" for c in r])
+            if digits > 1:
+                spacer = " " * (digits - len(str(i + 1)))
+                print("{}{} {}".format(spacer, i + 1, rowString))
+            else:
+                print("{} {}".format(i + 1, rowString))
 
 
+# Standard Game of Life
 g = GOL()
-g.nGen(100)
-
+g.nGen(22)
+# Larger Game of Life
 t = GOL(20, 20)
 t.grid()
-t.nGen(100)
+t.nGen(200)
+# Huge Game of Life
+g = GOL(100, 100)
+g.nGen(500)
