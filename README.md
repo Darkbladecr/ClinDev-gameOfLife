@@ -120,3 +120,5 @@ to the `play(n)` method.
 You are now able to change the grid size of the Game of Life by giving two
 numbers when creating the class `QOL(rows, columns)`. I have included an example
 at the end of the script with a grid size of 20x20 and 100x100.
+
+[REPL version here.](https://repl.it/L1Oe/0)
