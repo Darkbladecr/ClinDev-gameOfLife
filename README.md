@@ -113,11 +113,10 @@ your clinical developer muscles. Bonus points for the geekiest solution.
 ## gol.py
 
 This is a python script that is built around a class object. Simply instantiate
-a new class with `QOL()` and fast-forward the number of generations you would
-like with the `nGen()` method. An example is included at the end of the file.
-Also there are two different methods for calculating the number of neighbors
-an organism has.
+a new class with `QOL()` and you can play all the generations with the `play()`
+method. Otherwise you can select a specific generation by adding an integer `n`
+to the `play(n)` method.
 
 You are now able to change the grid size of the Game of Life by giving two
 numbers when creating the class `QOL(rows, columns)`. I have included an example
-at the end of the script with a grid size of 20x20.
+at the end of the script with a grid size of 20x20 and 100x100.
