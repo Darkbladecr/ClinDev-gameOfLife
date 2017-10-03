@@ -41,6 +41,8 @@ class GOL:
                 self.gen[0].append(list())
                 for i in range(column):
                     self.gen[0][r].append(int(round(random.random())))
+        self.height = len(self.gen[0])
+        self.width = len(self.gen[0][0])
 
     def __neighbors(self, row, column):
         """Calculate number of neighbors."""
@@ -49,14 +51,14 @@ class GOL:
 
         if row == 0:
             rowRange = range(0, 2)
-        elif row == len(self.gen[-1]) - 1:
+        elif row == self.height - 1:
             rowRange = range(-1, 1)
         else:
             rowRange = range(-1, 2)
 
         if column == 0:
             colRange = range(0, 2)
-        elif column == len(self.gen[-1][0]) - 1:
+        elif column == self.width - 1:
             colRange = range(-1, 1)
         else:
             colRange = range(-1, 2)
@@ -71,9 +73,9 @@ class GOL:
         if self.limit is True:
             return
         temp = list()
-        for row in range(len(self.gen[-1])):
+        for row in range(self.height):
             temp.append(list())
-            for col in range(len(self.gen[-1][0])):
+            for col in range(self.width):
                 n = self.__neighbors(row, col)
                 if self.gen[-1][row][col] == 0:
                     if n == 3:
@@ -109,7 +111,7 @@ class GOL:
         else:
             string = "Generation {}\n".format(n)
         # Print top row legend
-        legend = range(1, len(self.gen[n][0]) + 1)
+        legend = range(1, self.width + 1)
         digits = len(str(len(legend)))
         legendStr = " "
         for num in legend:
